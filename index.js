@@ -1,8 +1,7 @@
 const Word = require('./word');
 const inquirer = require('inquirer');
 
-
-
+//word bank
 let possibleWords = ['Hawks ',
     'Celtics ',
     'Nets',
@@ -34,10 +33,10 @@ let possibleWords = ['Hawks ',
     'Jazz ',
     'Wizards'
 ];
-
+//main game function
 function game() {
-
-console.log(`
+    //welcome message
+    console.log(`
 
 ------------------------------------------------------------------------------------------
 Welcome to Word Guess! Each word is a name of a current NBA team (without the city name). 
@@ -45,57 +44,59 @@ Guess a letter and click 'enter' to get started
 ------------------------------------------------------------------------------------------
 
 `);
-    
-    
+    //varibales that are essential to keeping track of user progress
     let correctLetterCount = 0;
     let correctLetterArr = [];
     let guessCount = 0;
     let guessesLeft = 15 - guessCount;
-
+    //create reandom word
     randomNum = Math.floor(Math.random() * 30);
     randomWord = possibleWords[randomNum].toLowerCase().trim();
     randomWordArr = randomWord.split('');
-
-    for (let i = 0; i < randomWordArr.length; i++){
+    //push letters in random word to the correctLetterArr
+    for (let i = 0; i < randomWordArr.length; i++) {
         correctLetterArr.push(randomWordArr);
     }
-
+    //create new Word as the randomWordArr
     gameWord = new Word(randomWordArr);
-
+    //show underscores
     gameWord.display();
     console.log(`
-    `)
-
-
-
+    `);
+    //run the guess function
     guess();
-
-    //console.log(randomWordArr);
+    //main guess function
     function guess() {
+        //if there are more than 0 guesses left and the user hasn't won yet
+        //ask the user to guess a letter
         if (guessesLeft > 0 && correctLetterCount < correctLetterArr.length) {
             inquirer.prompt([{
                 type: "input",
                 name: "userLetterGuessed",
                 message: `Guess a Letter`
             }]).then(function (input) {
-                
+                //check if the letter pressed is in the word
                 gameWord.callCheckFunc(input.userLetterGuessed);
                 console.log(`
                 `)
+                //show the letter or underscore accordingly
                 gameWord.display();
-
+                //if the letter is contained in the random word, add count to the 
+                //correctLetterCount variable
                 for (let i = 0; i < randomWordArr.length; i++) {
                     if (input.userLetterGuessed === randomWordArr[i]) {
                         correctLetterCount += 1;
                     }
                 }
-
+                //subtract one from guesses left
                 guessesLeft -= 1;
-
-                //console.log(correctLetterCount)
-                //console.log(correctLetterArr.length)
-
-                if (guessesLeft > 0 && correctLetterCount === correctLetterArr.length) {
+                //if the user has guesses left and the word has been completely guessed
+                //stop the game and ask user if they want to play again
+                //if the user has no guesses left and the word hasn't been completely guessed
+                //or the user doesn't have enough guesses to guess the remaing number of unguessed letters
+                //stop the game and ask the user if they want to play again
+                //if none of the above are true, ask the user to make another guess
+                if (guessesLeft >= 0 && correctLetterCount === correctLetterArr.length) {
                     console.log(`
                     `);
                     inquirer.prompt([{
@@ -107,7 +108,7 @@ Guess a letter and click 'enter' to get started
                             game();
                         }
                     });
-                } else if (guessesLeft === 0 && correctLetterCount < correctLetterArr.length) {
+                } else if (guessesLeft === 0 && correctLetterCount < correctLetterArr.length || guessesLeft < (correctLetterArr.length - correctLetterCount)) {
                     console.log(`
                     `);
                     inquirer.prompt([{
@@ -119,251 +120,18 @@ Guess a letter and click 'enter' to get started
                             game();
                         }
                     });
-                } else {
+                } else if (guessesLeft >= (correctLetterArr.length - correctLetterCount)) {
                     console.log(`
 
 You have ${guessesLeft} guesses remaining
                     
                     `);
+                    guess();
                 }
 
-                // console.log(correctLetterCount);
-                // console.log(guessCount);
-                guess();
             });
         }
     }
 }
 
-
-
-
 game();
-
-
-
-
-// let randomNum = 0;
-// let randomWord = '';
-// let randomWordArr = [];
-// let gameRunning = false;
-// let guessedLetterArr = [];
-// let pickedWords = [];
-// let guessesLeft = 15;
-
-// function newGame() {
-//     var ranNum = Math.floor(Math.random() * possibleWords.length);
-//     gameRunning = true;
-//     guessesLeft = 15;
-//     pickedWordPlaceholderArr = [];
-//     guessedLetterBank = [];
-//     incorrectLetterBank = [];
-
-//     //New word
-//     pickedWord = possibleWords[ranNum].toLowerCase().trim();
-//     console.log(pickedWord);
-//     pickedLetters = pickedWord.split("");
-//     gameWord = new Word(pickedLetters);
-
-//     console.log(gameWord);
-
-
-//     //Generate underscores
-//     for (var i = 0; i < pickedLetters.length; i++) {
-//         if (pickedLetters[i] === " ") {
-//             pickedWordPlaceholderArr.push(' ');
-//         } else {
-//             pickedWordPlaceholderArr.push('___');
-//         }
-
-//         // //Write all new game info to DOM
-//         // $guessesLeft.textContent = guessesLeft;
-//         // $placeholders.textContent = pickedWordPlaceholderArr.join('');
-//         // $guessedLetters.textContent = incorrectLetterBank;
-//     }
-
-//     console.log(pickedWordPlaceholderArr.join(' '));
-
-
-//     inquirer.prompt([{
-//         type: "input",
-//         name: "userLetterGuessed",
-//         message: `Guess a Letter`
-//     }]).then(function (input) {
-//         guessedLetterBank.push(input.userLetterGuessed);
-
-//         for (let i = 0; i < guessedLetterBank.length; i++) {
-//             gameWord.callGuessFunc(guessedLetterBank[i]);
-//             //gameWord.log();
-//         }
-
-
-//     });
-
-// }
-// newGame();
-
-
-
-
-
-
-// function game() {
-//     randomNum = Math.floor(Math.random() * 30);
-//     randomWord = possibleWords[randomNum].toLowerCase().trim();
-//     randomWordArr = randomWord.split('');
-
-//     gameWord = new Word(randomWordArr);
-
-//     console.log(randomWordArr);
-
-//     //gameWord.createLetterObj();
-//     //gameWord.callGuessFunc();
-// }
-
-//     function guess() {
-
-//         inquirer.prompt([{
-//             type: "input",
-//             name: "userLetterGuessed",
-//             message: `Guess a Letter`
-//         }]).then(function (input) {
-//             guessedLetterArr.push(input.userLetterGuessed);
-
-//             for (let i = 0; i < guessedLetterArr.length; i++) {
-//                 gameWord.callGuessFunc(guessedLetterArr[i]);
-//             }
-
-//             // if (guessesLeft > 0) {
-//             //     guessesLeft -= 1;
-//             // } else {
-//             //     gameRunning = false;
-//             // }
-
-//             // if (gameRunning === true) {
-//             //     guess();
-//             // }
-
-//         }).then(function (result) {
-//             gameWord.log();
-//             guess();
-//         });
-//     }
-
-
-// function init() {
-//     gameRunning = true; 
-
-//     console.log(`
-
-//     Hello, and welcome to Word Guess in Space!`);
-
-//     console.log(`
-//     ------------------------------------------`);
-
-//     game();
-//     guess();
-// }
-
-// function showstats() {
-//     guessedLetterArr.join('').toString();
-//     console.log(`
-//     You have guessed: ${guessedLetterArr}
-//     You have ${guessesLeft} guesses remaining
-//     `);
-// }
-
-
-// init();
-
-
-
-
-
-
-
-
-
-
-
-// function init() {
-//     gameRunning = true;
-//     console.log(`
-
-//     Hello, and welcome to Word Guess in Space!`);
-//     console.log(`
-//     ------------------------------------------
-
-//     `);
-
-//     generateWord();
-//     showstats();
-//     guess();
-// }
-
-// function showstats() {
-//     guessedLetterArr.join('').toString();
-//     console.log(`
-//     You have guessed: ${guessedLetterArr}
-//     You have ${guessesLeft} guesses remaining
-//     `);
-// }
-
-// function generateWord() {
-//     randomNum = Math.floor(Math.random() * 33);
-//     randomWord = possibleWords[randomNum];
-
-//     gameWord = new Word(randomWord);
-
-
-
-//     gameWord.showSpaces();
-//     //console.log(randomWord);
-// }
-
-// init();
-
-// function guess() {
-//     if (guessesLeft > 0 && gameRunning === true) {
-//         inquirer.prompt([{
-//             type: "input",
-//             name: "userLetterGuessed",
-//             message: `Guess a Letter`
-//         }]).then(function (input) {
-//             for (let i = 0; gameWord.letterArr.length; i++) {
-//                 if (input.userLetterGuessed.length === 1 && input.userLetterGuessed === gameWord.letterArr[i]) {
-//                     //guessedLetterArr.push(input.userLetterGuessed);
-//                     guessesLeft -= 1;
-//                     newLetter = new Letter(gameWord.letterArr[i], true, input.userLetterGuessed)
-//                     newLetter.display();
-//                     showstats();
-//                     guess();
-//                 }
-//             }
-
-//         });
-//     }
-// }
-
-
-// inquirer.prompt([{
-//     type: "confirm",
-//     name: "confirm",
-//     message: "Welcome to this word guessing game! Each word will be a team name of a current NBA team. Are you ready to get started?"
-// }]).then(function (user) {
-//     if (user.confirm === true) {
-//         gamerunning = true;
-
-//         randomNum = Math.floor(Math.random() * 33);
-//         randomWord = possibleWords[randomNum];
-
-//         let gameWord = new Word(randomWord);
-
-//         gameWord.showSpaces();
-//         console.log(randomWord);
-//     }
-// });
-
-// while (gamerunning === true) {
-
-// }
